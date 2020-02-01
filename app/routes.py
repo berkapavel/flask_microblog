@@ -10,7 +10,6 @@ from werkzeug.urls import url_parse
 @app.route('/index')
 @login_required
 def index():
-    user = {'username': 'Evan'}
     posts = [
         {
             'author': {'username': 'John'},
@@ -30,11 +29,11 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
+        user_login = User.query.filter_by(username=form.username.data).first()
+        if user_login is None or not user_login.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
+        login_user(user_login, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
@@ -54,9 +53,9 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
+        user_register = User(username=form.username.data, email=form.email.data)
+        user_register.set_password(form.password.data)
+        db.session.add(user_register)
         db.session.commit()
         flash('Congratulation, you are now a registered user!')
         return redirect(url_for('login'))
